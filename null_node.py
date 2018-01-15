@@ -7,9 +7,6 @@ class NullNode(object):
         self.key = None
         self.value = None
 
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
-
     def __nonzero__(self):
         return False
 

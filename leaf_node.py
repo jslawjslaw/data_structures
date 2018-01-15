@@ -15,9 +15,6 @@ class LeafNode(object):
         ).format(self.key, self.value, self.left.key, self.right.key)
         return rep
 
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
-
     def __init__(self, key, value=None, left=NullNode(), right=NullNode()):
         if key is None or not isinstance(key, numbers.Number):
             raise KeyError
