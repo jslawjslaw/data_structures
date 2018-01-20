@@ -2,11 +2,11 @@
 from nose.tools import assert_raises
 from unittest import TestCase
 
-from data_structures.binary_search_tree import (
+from data_structures.trees.binary_search_tree import (
     BinarySearchTree,
     RootDeletionError,
 )
-from data_structures.null_node import NullNode
+from data_structures.nodes.null_node import NullNode
 
 
 class TestBinarySearchTree(TestCase):
@@ -46,7 +46,7 @@ class TestBinarySearchTree(TestCase):
         inserted_node = bst.insert(2, "another value")
         assert bst.root.right is inserted_node
 
-        bst.delete(2)
+        bst.delete(2, drop_subtree=True)
         assert isinstance(bst.root.right, NullNode)
 
     def test_search(self):
@@ -57,3 +57,39 @@ class TestBinarySearchTree(TestCase):
         node = bst.search(3)
         assert node is rightmost_node
         assert_raises(KeyError, bst.search, 5)
+
+    def test_breadth_first_search(self):
+        bst = BinarySearchTree(5, "apple")
+        bst.insert(2, "banana")
+        bst.insert(7, "orange")
+        bst.insert(8, "tomato")
+        node = bst.insert(6, "carrot")
+
+        result = bst.breadth_first_search("carrot")
+        assert node is result
+
+        node = bst.breadth_first_search("hello")
+        assert node is None
+
+    def test_depth_first_search(self):
+        bst = BinarySearchTree(5, "apple")
+        bst.insert(2, "banana")
+        bst.insert(7, "orange")
+        bst.insert(8, "tomato")
+        node = bst.insert(6, "carrot")
+
+        result = bst.depth_first_search("carrot")
+        assert node is result
+
+        node = bst.depth_first_search("hello")
+        assert node is None
+
+    def test_left_rotate(self):
+        bst = BinarySearchTree(5)
+        node = bst.insert(6)
+        bst.insert(4)
+        bst.left_rotate(bst.root)
+
+        assert bst.root is node
+        assert bst.root.left.key == 5
+        assert bst.root.left.left.key == 4

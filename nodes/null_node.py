@@ -7,6 +7,22 @@ class NullNode(object):
         self.key = None
         self.value = None
 
+    @property
+    def left(self):
+        return None
+
+    @left.setter
+    def left(self, value):
+        pass
+
+    @property
+    def right(self):
+        return None
+
+    @right.setter
+    def right(self, value):
+        pass
+
     def __nonzero__(self):
         return False
 
