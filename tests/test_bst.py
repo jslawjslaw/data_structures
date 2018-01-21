@@ -22,9 +22,8 @@ class TestBinarySearchTree(TestCase):
         assert_raises(KeyError, BinarySearchTree, "string", None)
 
     def test_insert(self):
-        """
-        Inserts left children; inserts right children; replaces values;
-        inserts at various levels
+        """Inserts left children; inserts right children; replaces values;
+        inserts at various levels.
         """
         bst = BinarySearchTree(1, "value")
         inserted_node_right = bst.insert(2, "higher value")
@@ -93,3 +92,13 @@ class TestBinarySearchTree(TestCase):
         assert bst.root is node
         assert bst.root.left.key == 5
         assert bst.root.left.left.key == 4
+
+    def test_right_rotate(self):
+        bst = BinarySearchTree(5)
+        bst.insert(6)
+        node = bst.insert(4)
+        bst.right_rotate(bst.root)
+
+        assert bst.root is node
+        assert bst.root.right.key == 5
+        assert bst.root.right.right.key == 6

@@ -8,14 +8,22 @@ class LeafNode(object):
 
     def __repr__(self):
         rep = (
-            "Key: {} \n"
-            "Value: {} \n"
-            "Left Child: {} \n"
+            "Key:         {} \n"
+            "Value:       {} \n"
+            "Left Child:  {} \n"
             "Right Child: {} \n"
-        ).format(self.key, self.value, self.left.key, self.right.key)
+            "Predecessor: {}"
+        ).format(
+            self.key,
+            self.value,
+            self.left.key,
+            self.right.key,
+            self.predecessor.key,
+        )
         return rep
 
-    def __init__(self, key, value=None, left=NullNode(), right=NullNode()):
+    def __init__(self, key, value=None, left=NullNode(), right=NullNode(),
+                 predecessor=NullNode()):
         if key is None or not isinstance(key, numbers.Number):
             raise KeyError
 
@@ -23,6 +31,7 @@ class LeafNode(object):
         self.right = right
         self._key = key
         self.value = value
+        self.predecessor = predecessor
 
     @property
     def key(self):

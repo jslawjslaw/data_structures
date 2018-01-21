@@ -1,10 +1,7 @@
 
 from data_structures.nodes.leaf_node import LeafNode
 from data_structures.nodes.null_node import NullNode
-
-
-class RootDeletionError(Exception):
-    pass
+from data_structures.trees.exceptions import RootDeletionError
 
 
 class BinarySearchTree(object):
@@ -17,67 +14,112 @@ class BinarySearchTree(object):
         pass
 
     def insert(self, key, value=None):
-        current_node = self.root
-        previous_node = NullNode()
+        node = self.root
+        predecessor = NullNode()
         direction = None
-        while current_node:
-            previous_node = current_node
-            if current_node.key > key:
-                current_node = current_node.left
+        while node:
+            predecessor = node
+            if node.key > key:
+                node = node.left
                 direction = "left"
-            elif current_node.key == key:
-                current_node.value = value
+            elif node.key == key:
+                node.value = value
                 return
             else:
-                current_node = current_node.right
+                node = node.right
                 direction = "right"
 
-        new_node = LeafNode(key, value)
-        setattr(previous_node, direction, new_node)
+        new_node = LeafNode(key=key, value=value, predecessor=predecessor)
+        setattr(predecessor, direction, new_node)
         self.size += 1
 
         return new_node
 
-    def delete(self, key, drop_subtree=False, left_rotate=True):
+    def delete(self, key, drop_subtree=False):
         if self.root.key == key:
             raise RootDeletionError("Cannot delete root node.")
 
         try:
+            node, direction = self._search(key)
             if drop_subtree:
-                self._delete_drop_subtree(key)
+                self._delete_drop_subtree(node, direction)
             else:
-                self._delete(key, left_rotate)
+                self._delete(node, direction)
         except KeyError:
             pass
 
-    def _delete(self, key, left_rotate):
-        pass
+    def _delete(self, node, direction):
+        if node.right and node.left:
+            current_node = node.right
+            while True:
+                if current_node.left:
+                    current_node = current_node.left
+                else:
+                    break
+            if current_node.right:
+                current_node.predecessor.left = current_node.right
+            current_node.right = node.right
+            current_node.left = node. left
+            setattr(node.predecessor, direction, current_node)
+        if node.left:
+            setattr(node.predecessor, direction, node.left)
+        if node.right:
+            setattr(node.predecessor, direction, node.right)
 
-    def _delete_drop_subtree(self, key):
-        _, previous_node, direction = self._search(key)
-        setattr(previous_node, direction, NullNode())
+        self._delete_drop_subtree(node, direction)
 
-    def right_rotate(self, node, predecessor=NullNode()):
-        pass
+    def _delete_drop_subtree(self, node, direction):
+        setattr(node.predecessor, direction, NullNode())
 
-    def left_rotate(self, node, predecessor=NullNode()):
-        right_left_subtree_root = node.right.left
+    def right_rotate(self, node):
+        subtree_root = node.left.right
+        current_node = node.right.left
+        while True:
+            if current_node.left:
+                current_node = current_node.left
+            else:
+                break
+        current_node.left = subtree_root
+        node.predecessor.right = node.left
+        if not node.predecessor:
+            self.root = node.left
+        node.left.right = node
+        node.left = NullNode()
+
+    def left_rotate(self, node):
+        subtree_root = node.right.left
         current_node = node.left.right
         while True:
             if current_node.right:
                 current_node = current_node.right
             else:
                 break
-        current_node.right = right_left_subtree_root
-        predecessor.left = node.right
-        if not predecessor:
+        current_node.right = subtree_root
+        node.predecessor.left = node.right
+        if not node.predecessor:
             self.root = node.right
         node.right.left = node
         node.right = NullNode()
 
     def search(self, key):
-        node, _, _ = self._search(key)
+        node, _ = self._search(key)
         return node
+
+    def _search(self, key):
+        node = self.root
+        direction = None
+        while node.key != key:
+            if node.key > key:
+                node = node.left
+                direction = "left"
+            else:
+                node = node.right
+                direction = "right"
+
+            if not node:
+                raise KeyError
+
+        return node, direction
 
     def breadth_first_search(self, value):
         queue = [self.root]
@@ -109,21 +151,3 @@ class BinarySearchTree(object):
         right = self._depth_first_search(value, node.right)
 
         return left or right
-
-    def _search(self, key):
-        node = self.root
-        previous_node = None
-        direction = None
-        while node.key != key:
-            previous_node = node
-            if node.key > key:
-                node = node.left
-                direction = "left"
-            else:
-                node = node.right
-                direction = "right"
-
-            if not node:
-                raise KeyError
-
-        return node, previous_node, direction

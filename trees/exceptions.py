@@ -1,0 +1,2 @@
+class RootDeletionError(Exception):
+    pass
