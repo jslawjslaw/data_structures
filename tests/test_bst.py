@@ -2,10 +2,8 @@
 from nose.tools import assert_raises
 from unittest import TestCase
 
-from data_structures.trees.binary_search_tree import (
-    BinarySearchTree,
-    RootDeletionError,
-)
+from data_structures.trees.binary_search_tree import BinarySearchTree
+from data_structures.trees.exceptions import RootDeletionError
 from data_structures.nodes.null_node import NullNode
 
 
@@ -39,14 +37,44 @@ class TestBinarySearchTree(TestCase):
         assert bst.root.right.right is rightmost_node
 
     def test_delete(self):
-        bst = BinarySearchTree(1, "value")
+        bst = BinarySearchTree(1)
         assert_raises(RootDeletionError, bst.delete, 1)
 
-        inserted_node = bst.insert(2, "another value")
+        inserted_node = bst.insert(2)
         assert bst.root.right is inserted_node
 
         bst.delete(2, drop_subtree=True)
         assert isinstance(bst.root.right, NullNode)
+
+        bst.insert(8)
+        new_predecessor = bst.insert(9)
+        bst.insert(7)
+        bst.insert(6)
+        bst.insert(10)
+        bst.delete(8)
+
+        assert bst.root.right is new_predecessor
+        assert bst.root.right.left.key == 7
+        assert bst.root.right.left.predecessor is new_predecessor
+        assert bst.root.right.right.key == 10
+        assert_raises(KeyError, bst.search, 8)
+
+        bst = BinarySearchTree(1)
+        bst.insert(8)
+        bst.insert(7)
+        bst.insert(6)
+        bst.insert(9)
+        bst.insert(10)
+        new_predecessor = bst.insert(8.5)
+        bst.insert(8.75)
+        bst.delete(8)
+
+        assert bst.root.right is new_predecessor
+        assert bst.root.right.right.key == 9
+        assert bst.root.right.right.predecessor is new_predecessor
+        assert bst.root.right.left.key == 7
+        assert bst.root.right.right.left.key == 8.75
+        assert_raises(KeyError, bst.search, 8)
 
     def test_search(self):
         bst = BinarySearchTree(1, "value")

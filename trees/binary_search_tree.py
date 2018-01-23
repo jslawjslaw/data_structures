@@ -56,15 +56,24 @@ class BinarySearchTree(object):
                     current_node = current_node.left
                 else:
                     break
-            if current_node.right:
+
+            if current_node.right and node.right != current_node:
                 current_node.predecessor.left = current_node.right
-            current_node.right = node.right
-            current_node.left = node. left
+                current_node.right.predecessor = current_node.predecessor
+                current_node.right = node.right
+                node.right.predecessor = current_node
+
+            current_node.left = node.left
+            node.left.predecessor = current_node
+            current_node.predecessor = node.predecessor
             setattr(node.predecessor, direction, current_node)
+            return
         if node.left:
             setattr(node.predecessor, direction, node.left)
+            return
         if node.right:
             setattr(node.predecessor, direction, node.right)
+            return
 
         self._delete_drop_subtree(node, direction)
 
