@@ -7,6 +7,7 @@ class NullNode(object):
         self.key = None
         self.value = None
         self.predecessor = None
+        self.child = None
 
     @property
     def left(self):
@@ -30,6 +31,14 @@ class NullNode(object):
 
     @predecessor.setter
     def predecessor(self, value):
+        pass
+
+    @property
+    def child(self):
+        return None
+
+    @child.setter
+    def child(self, value):
         pass
 
     def __nonzero__(self):
